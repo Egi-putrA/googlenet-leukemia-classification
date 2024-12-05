@@ -1,26 +1,29 @@
+import math
+
 import streamlit as st
 import tensorflow as tf
-import cv2
-import numpy as np
+
+class_names = ['Early', 'Benign', 'Pre', 'Pro']
 
 @st.cache_resource
 def load_model():
-    return tf.saved_model.load('googlenet_model/original_data')
+    return tf.saved_model.load('googlenet_model/original_data').signatures["serving_default"]
 
 model = load_model()
-print(model)
 
 images_uploaded = st.file_uploader("Upload file", type=['jpg', 'png'], accept_multiple_files=True)
 
+for i in range(math.ceil(len(images_uploaded) / 3)):
+    cols = min(3, len(images_uploaded) - (i*3))
+    row = st.columns(cols)
 
-for image in images_uploaded:
-    print(type(image))
-    print(image)
-    image_data = np.asarray(bytearray(image.read()), dtype="uint8")
-    img_file = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
-    cv2.imwrite("result.jpg", img_file) 
-    st.image(image)
+    for j in range(cols):
+        row[j].image(images_uploaded[i*3 + j], width=224)
+        img = tf.io.decode_image(images_uploaded[i*3 + j].read(), dtype="uint8", channels=3)
+        img = tf.image.resize(img, [224, 224])
+        img = tf.convert_to_tensor([img / 255], dtype=tf.float32)
 
-    result = model.predict(img_file)
-    print(result)
-    print(tf.math.argmax(result, axis=1))
+
+        pred = model(img)
+        pred = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
+        row[j].write(class_names[pred[0]])
