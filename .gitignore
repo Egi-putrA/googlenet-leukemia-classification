@@ -1,3 +1,6 @@
 dataset
 deep_smote_model
 streamlit/googlenet_model
+streamlit/model
+.venv
+__pycache__
