@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import cv2
 
-class_names = ['Early', 'Benign', 'Pre', 'Pro']
+class_names = ['Benign', 'Early', 'Pre', 'Pro']
 
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
@@ -15,6 +15,7 @@ def load_model():
 
 model = load_model()
 
+st.title('Klasifikasi leukemia limfoblastik akut dengan arsitektur googlenet')
 images_uploaded = st.file_uploader("Upload file", type=['jpg', 'png'], accept_multiple_files=True)
 
 
@@ -46,5 +47,6 @@ for i in range(math.ceil(len(images_uploaded) / 3)):
 
         # predict
         pred = model(img)
-        pred = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
-        row[j].write(class_names[pred[0]])
+        print(pred)
+        idx = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
+        row[j].write(f'{class_names[idx[0]]} ({pred['result'][0][idx[0]] * 100}%)')
