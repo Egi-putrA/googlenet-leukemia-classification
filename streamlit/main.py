@@ -16,20 +16,15 @@ def load_model():
 model = load_model()
 
 st.title('Klasifikasi leukemia limfoblastik akut dengan arsitektur googlenet')
-images_uploaded = st.file_uploader("Upload file", type=['jpg', 'png'], accept_multiple_files=True)
+image_uploaded = st.file_uploader("Upload file", type=['jpg', 'png'], accept_multiple_files=False)
 
 
-
-for i in range(math.ceil(len(images_uploaded) / 3)):
-    cols = min(3, len(images_uploaded) - (i*3))
-    row = st.columns(cols)
-
-    for j in range(cols):
-        row[j].image(images_uploaded[i*3 + j], width=224)
-
+if image_uploaded:
+    row = st.columns(2)
+    row[0].image(image_uploaded, use_container_width=True)
+    with st.spinner('Sedang memproses'):
         # read image
-        arr = np.asarray(bytearray(images_uploaded[i*3 + j].read()), dtype=np.uint8)
-        print(arr)
+        arr = np.asarray(bytearray(image_uploaded.read()), dtype=np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         
         # clahe preprocessing
@@ -47,6 +42,8 @@ for i in range(math.ceil(len(images_uploaded) / 3)):
 
         # predict
         pred = model(img)
-        print(pred)
         idx = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
-        row[j].write(f'{class_names[idx[0]]} ({pred['result'][0][idx[0]] * 100}%)')
+
+    # Show result
+    row[1].markdown(f'## Hasil Prediksi : {class_names[idx[0]]}')
+    row[1].markdown(f'## Confidence : {(pred['result'][0][idx[0]] * 100):.2f}%')
