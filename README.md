@@ -1,5 +1,8 @@
 # Leukemia classification using googlenet architecture
 
+## Streamlit demo
+![](streamlit/demo.gif)
+
 ## Requirements
 
 - python runtime >=3.10 <=3.12
@@ -18,7 +21,7 @@ Then, open streamlit subdirectory
 ```
 cd googlenet-leukemia-classification/streamlit
 ```
-### (Optional) use python virtual environments before install dependecies
+### Optional: use python virtual environments before install dependecies
 Create virtual env
 ```
 python -m venv venv
