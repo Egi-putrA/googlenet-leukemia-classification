@@ -20,30 +20,32 @@ image_uploaded = st.file_uploader("Upload file", type=['jpg', 'png'], accept_mul
 
 
 if image_uploaded:
-    row = st.columns(2)
-    row[0].image(image_uploaded, use_container_width=True)
-    with st.spinner('Sedang memproses'):
-        # read image
-        arr = np.asarray(bytearray(image_uploaded.read()), dtype=np.uint8)
-        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-        
-        # clahe preprocessing
-        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
+    cols = st.columns(2)
+    cols[0].image(image_uploaded, use_container_width=True)
+    
+    with cols[1]:
+        with st.spinner('Sedang memproses'):
+            # read image
+            arr = np.asarray(bytearray(image_uploaded.read()), dtype=np.uint8)
+            img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            
+            # clahe preprocessing
+            lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
 
-        l = clahe.apply(l)
-        lab = cv2.merge([l, a, b])
+            l = clahe.apply(l)
+            lab = cv2.merge([l, a, b])
 
-        img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
-        
-        # resize and normalization (from int to float 0-1)
-        img = cv2.resize(img, (224, 224))
-        img = tf.convert_to_tensor([img / 255], dtype=tf.float32)
+            img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
+            
+            # resize and normalization (from int to float 0-1)
+            img = cv2.resize(img, (224, 224))
+            img = tf.convert_to_tensor([img / 255], dtype=tf.float32)
 
-        # predict
-        pred = model(img)
-        idx = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
+            # predict
+            pred = model(img)
+            idx = tf.math.argmax(pred['result'], axis=1).numpy().tolist()
 
-    # Show result
-    row[1].markdown(f'## Hasil Prediksi : {class_names[idx[0]]}')
-    row[1].markdown(f'## Confidence : {(pred['result'][0][idx[0]] * 100):.2f}%')
+        # Show result
+        cols[1].markdown(f'## Hasil Prediksi : {class_names[idx[0]]}')
+        cols[1].markdown(f'## Confidence : {(pred['result'][0][idx[0]] * 100):.2f}%')
