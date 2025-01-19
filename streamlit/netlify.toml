@@ -7,8 +7,8 @@
   command = """\
     pip install -r requirements.txt && \
     mkdir googlenet_model && \
-    curl -O https://github.com/Egi-putrA/googlenet-leukemia-classification/releases/download/v1.0.0/clahe_balanced_model.zip && \
-    unzip clahe_balanced_model -d googlenet_model && \
+    wget https://github.com/Egi-putrA/googlenet-leukemia-classification/releases/download/v1.0.0/clahe_balanced_model.zip && \
+    unzip clahe_balanced_model.zip -d googlenet_model && \
     rm clahe_balanced_model.zip
     """
 [dev]
