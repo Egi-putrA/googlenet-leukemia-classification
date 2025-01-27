@@ -1,8 +1,5 @@
 # Leukemia classification using googlenet architecture
 
-## Streamlit demo
-![](streamlit/demo.gif)
-
 ## Requirements
 
 - python runtime >=3.10 <=3.12
